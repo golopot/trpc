@@ -28,20 +28,24 @@ export const publicProcedure = t.procedure;
 
 const appRouter = router({
   // Queries are the best place to fetch data
-  hello: publicProcedure.query(() => {
-    return {
-      message: 'hello world',
-    };
-  }),
+  hello: publicProcedure
+    .input(z.object({ name: z.string() }))
+    .query(({ input }) => {
+      return {
+        message: `hello ${input.name}`,
+      };
+    }),
 
   // Mutations are the best place to do things like updating a database
-  goodbye: publicProcedure.mutation(async (opts) => {
-    await opts.ctx.signGuestBook();
+  goodbye: publicProcedure
+    .input(z.object({ userId: z.string().uuid() }))
+    .mutation(async ({ input, ctx }) => {
+      await ctx.signGuestBook();
 
-    return {
-      message: 'goodbye!',
-    };
-  }),
+      return {
+        message: `goodbye user ${input.userId}`,
+      };
+    }),
 });
 ```
 
